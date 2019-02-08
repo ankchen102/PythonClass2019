@@ -89,8 +89,8 @@ app.layout = html.Div([html.H1('Customer Map', style={'textAlign':'center'}),
 
 def update_figure(selected_gender, start_date, end_date):    
      filtered_df = demographics.loc[(demographics['Gender'].isin(selected_gender)) &  
-                                  (demographics['JoinDate'] >= join_start_date) &
-                                  (demographics['JoinDate'] <= join_end_date) ,]
+                                  (demographics['JoinDate'] >= start_date) &
+                                  (demographics['JoinDate'] <= end_date) ,]
      zip_size = demographics.groupby(["zip_city"]).size()
     
      zip_size = demographics.groupby(["zip_city", 'zip_longitude', 'zip_latitude']).size()
@@ -129,9 +129,26 @@ def update_figure(selected_gender, start_date, end_date):
 
 def update_table(selected_gender, start_date, end_date):    
     filtered_df = demographics.loc[(demographics['Gender'].isin(selected_gender)) &  
-                                  (demographics['JoinDate'] >= join_start_date) &
-                                  (demographics['JoinDate'] <= join_end_date), ]
+                                  (demographics['JoinDate'] >= start_date) &
+                                  (demographics['JoinDate'] <= end_date), ]
     return filtered_df.to_dict("rows")
 
 if __name__ == '__main__':
     app.run_server()
+    
+      #%%
+    dcc.DatePickerRange(
+            id='date-picker-range',
+            start_date=dt(1997,5,3),
+            end_date_placeholder_text='Select a date!'
+    )
+    
+    #%%
+    zip_state=demographics.zip_state
+    state_options=[]
+    for state in demographics['zip_state'].unique():
+        state_options.append({'label':str(zip_state),'value':zip_state})
+    
+    dcc.Checklist(id='state_picker',
+            options=state_options,
+                    values=[list("state_options")])
